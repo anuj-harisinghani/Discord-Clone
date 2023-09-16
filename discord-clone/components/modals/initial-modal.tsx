@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 
 // setting requirements for server name and image fields that need to be filled out when creating a server
@@ -44,6 +45,12 @@ const formSchema = z.object({
 
 export const InitialModal = () => {
 
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, [])
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -56,6 +63,10 @@ export const InitialModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
+    }
+
+    if (!isMounted) {
+        return null;
     }
 
     // desigining Dialog elements
@@ -92,13 +103,22 @@ export const InitialModal = () => {
                                             className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                                             placeholder="Enter server name"
                                             {...field}
+                                            // ...field takes the onChange, onHover, onPress kind of interactions from React HookForm, defined above in render { field }
                                             />
                                         </FormControl>
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
 
                         </div>
+                        <DialogFooter className = 'bg-gray-100 px-6 py-4'>
+                            <Button variant = "primary" disabled = {isLoading}>
+                                Create
+                            </Button>
+
+
+                        </DialogFooter>
 
                     </form>
                 </Form>
